@@ -33,6 +33,7 @@
                     <option value="original">Original style</option>
                     <option value="simple">Thick major grid lines</option>
                     <option value="blue">Blue major grid lines</option>
+                    <option value="blue-thin">Blue major grid thin</option>
                 </select></p>
                 <p style="text-align: right;"><a target="_blank" id="download-link">Download</a></p>
             </div>
@@ -94,6 +95,12 @@
             case "blue":
                 majorThickness.value = 0.6;
                 minorThickness.value = 0.2;
+                majorColor.value = "#0000FF";
+                minorColor.value = "#7F7F7F";
+                break;
+            case "blue-thin":
+                majorThickness.value = 0.12;
+                minorThickness.value = 0.12;
                 majorColor.value = "#0000FF";
                 minorColor.value = "#7F7F7F";
                 break;
