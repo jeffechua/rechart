@@ -1,0 +1,99 @@
+<html lang="en-GB">
+
+<head>
+    <meta charset="utf-8" />
+    <title>rechart</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+    <div class="fill"><tr>
+        <div style="padding: 10 20 20 10">
+            <h3>Isentropic flow chart customisation</h3>
+            <table>
+                <tr>
+                    <td>Major line thickness: </td>
+                    <td><input type="number" id="major-thickness" step="0.05" max="9" min="0" value="0.8" onchange="render();"></td>
+                </tr>
+                <tr>
+                    <td>Major line colour: </td>
+                    <td><input type="color" id="major-color" value="#000000" onchange="render();"></td>
+                </tr>
+                <tr>
+                    <td>Minor line thickness: </td>
+                    <td><input type="number" id="minor-thickness" step="0.05" max="9" min="0" value="0.4" onchange="render();"></td>
+                </tr>
+                <tr>
+                    <td>Major line colour: </td>
+                    <td><input type="color" id="minor-color" value="#7F7F7F" onchange="render();"></td>
+                </tr>
+            </table>
+            <p>Use preset:&nbsp;<select onchange="setPreset(this.value)">
+                <option value="original">Original style</option>
+                <option value="simple">Thick major grid lines</option>
+                <option value="blue">Blue major grid lines</option>
+            </select></p>
+            <p style="text-align: right;"><a target="_blank" id="download-link">Download</a></p>
+        </div>
+        <div style="flex-grow: 1">
+            <iframe id="iframe" width="100%" height="100%">
+
+            </iframe>
+        </div>
+    </div>
+    </div>
+</body>
+
+<script>
+
+    const majorThickness = document.getElementById("major-thickness");
+    const majorColor = document.getElementById("major-color");
+    const minorThickness = document.getElementById("minor-thickness");
+    const minorColor = document.getElementById("minor-color");
+    const downloadLink = document.getElementById("download-link");
+    const frame = document.getElementById("iframe");
+
+    let template;
+    fetch("template.pdf", {headers:{"Content-Type": "application/pdf;charset=utf-8"}})
+    .then(response => response.text())
+    .then(text => {
+        template = text;
+        render();
+    });
+
+    function render () {
+        let output = template;
+        output = output.replace(/1\.11/g, parseFloat(majorThickness.value).toFixed(2));
+        output = output.replace(/0\.00 0\.00 1\.00/g, majorColor.value.match(/[A-Za-z0-9]{2}/g).map((v) => (1.0*parseInt(v, 16)/255).toFixed(2)).join(" "));
+        output = output.replace("0.50", parseFloat(minorThickness.value).toFixed(2));
+        output = output.replace("0.60 0.60 0.60", minorColor.value.match(/[A-Za-z0-9]{2}/g).map((v) => (1.0*parseInt(v, 16)/255).toFixed(2)).join(" "));
+        const data = "data:application/pdf;charset=utf-8," + encodeURIComponent(output);
+        downloadLink.href = data;
+        frame.src = data;
+    }
+
+    function setPreset (value) {
+        switch (value) {
+            case "original":
+                majorThickness.value = 0.12;
+                minorThickness.value = 0.12;
+                majorColor.value = "#000000";
+                minorColor.value = "#7F7F7F";
+                break;
+            case "simple":
+                majorThickness.value = 0.8;
+                minorThickness.value = 0.4;
+                majorColor.value = "#000000";
+                minorColor.value = "#7F7F7F";
+                break;
+            case "blue":
+                majorThickness.value = 0.6;
+                minorThickness.value = 0.2;
+                majorColor.value = "#0000FF";
+                minorColor.value = "#7F7F7F";
+                break;
+        }
+        render();
+    }
+
+</script>
